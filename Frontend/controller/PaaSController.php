@@ -8,7 +8,7 @@
 include_once "../class/RestClient.php";
 
 if (isset($_POST["send"])) {
-    $response = post("paas/configure.json", $_POST);
+    $response = post("paas/installPackages.json", $_POST);
 
     header('location: ../view/home.php');
     return $response;
