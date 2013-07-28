@@ -8,7 +8,7 @@ if (isset($_POST["send"])) {
 
     //$response = get("rbvmomi/configuration.json");
 
-    header('location: ../index.php');
+    header('location: ../view/home.php');
     return $response;
 }
 ?>

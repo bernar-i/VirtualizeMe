@@ -7,4 +7,5 @@ $oConfig = getConfig();
 echo $_POST["username"];
 echo $_POST["password"];
 
+header('location: ../view/home.php');
 ?>
