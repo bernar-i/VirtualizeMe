@@ -10,6 +10,19 @@ module SkyCloud
       @oVim = nil
     end
 
+    def get_ip aParams
+      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method get_ip"
+      oRbVmomiManager = RbVmomiManager.new
+      oVim = oRbVmomiManager.connect
+      oVm = oVim.serviceInstance.find_datacenter.find_vm(aParams[:vm_name])
+
+      sIp = oVm.summary.guest.ipAddress
+
+      oRbVmomiManager.close
+
+      return sIp
+    end
+
     def cloneVm aParams
       SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method cloneVm"
       oRbVmomiManager = RbVmomiManager.new
@@ -135,5 +148,5 @@ module SkyCloud
      ssh.close
    end
 
-  end
+ end
 end

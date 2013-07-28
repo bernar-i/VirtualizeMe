@@ -6,7 +6,7 @@ module SkyCloud
   class RbVmomiManager
     attr_reader :oVim
 
-    def initilize
+    def initialize
       @oVim = nil
     end
 

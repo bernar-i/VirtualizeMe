@@ -30,8 +30,48 @@ module SkyCloud
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Configure virtual machine"
-            oPaasManager = PaasManager.new
-            oPaasManager.configure(params)
+            oPaasManager = PaasManager.new(params)
+            oPaasManager.installPackages(params)
+            sc_response true
+          rescue ScError => e
+            sc_response e
+          end
+        end
+      end
+
+      desc "Clone a repository into your webserver"
+      namespace 'gitClone' do
+        desc ""
+        params do
+          requires :vm_name, :type => String, :desc => ""
+          requires :application, :type => String, :desc => ""
+          requires :repository, :type => String, :desc => ""
+        end
+        post do
+          begin
+            sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Clone repository with Git"
+            oPaasManager = PaasManager.new(params)
+            oPaasManager.gitClone(params)
+            sc_response true
+          rescue ScError => e
+            sc_response e
+          end
+        end
+      end
+
+      desc "Update a repository"
+      namespace 'gitPull' do
+        desc ""
+        params do
+          requires :vm_name, :type => String, :desc => ""
+          requires :application, :type => String, :desc => ""
+          requires :repository, :type => String, :desc => ""
+        end
+        post do
+          begin
+            sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Update repository with Git"
+            oPaasManager = PaasManager.new(params)
+            oPaasManager.gitPull(params)
             sc_response true
           rescue ScError => e
             sc_response e

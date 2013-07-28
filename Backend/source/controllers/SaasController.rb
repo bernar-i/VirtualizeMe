@@ -2,6 +2,8 @@
 
 require 'rbvmomi'
 
+require 'digest/sha1'
+
 module SkyCloud
   autoload :SaasManager, "saas/SaasManager"
 
@@ -24,13 +26,16 @@ module SkyCloud
       namespace 'owncloud' do
         desc ""
         params do
-          requires :ip, :type => String, :desc => ""
+          requires :vm_name, :type => String, :desc => ""
+          requires :username, :type => String, :desc => ""
+          requires :password, :type => String, :desc => ""
         end
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[SaaS] Configure virtual machine"
-            oSaasManager = SaasManager.new
-            oSaasManager.setup_owncloud(params)
+            oSaasManager = SaasManager.new(params)
+            oSaasManager.configureOwncloud(params)
+            oSaasManager.user(params)
             sc_response true
           rescue ScError => e
             sc_response e
