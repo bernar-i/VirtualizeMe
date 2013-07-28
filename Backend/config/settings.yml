@@ -1,0 +1,6 @@
+logger:
+  path:       "./logs/skycloud-server.log"
+  shift_age:  "monthly"
+  shift_size: 102458
+  level:      "DEBUG"
+  stdout:     true

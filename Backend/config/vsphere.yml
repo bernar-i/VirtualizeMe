@@ -1,0 +1,5 @@
+endpoint:
+  host:     192.168.254.254
+  user:     group02
+  password: ndl)%Cg3
+  insecure: USE_INSECURE_SSL

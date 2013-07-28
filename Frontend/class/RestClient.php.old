@@ -1,0 +1,126 @@
+<?php
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Description of RpcClient
+ *
+ * @author nicolasbremont
+ */
+class RestClient implements ISkycloudClient {
+    
+    private $host;
+    private $req;
+    private $response;
+    private $params;
+    
+    private function replaceRoute($matches)
+    {
+        if (isset($this->params[$matches[1]]))
+                return $this->params[$matches[1]];
+    }
+    
+    public function __construct($host = NULL, $port = 9020) {
+        if (NULL === $host)
+            throw new Exception("host can not be null");
+        $this->host = "http://127.0.0.1:9090";
+    }
+    
+    
+    public function post($method = "", $params = NULL, $format = "")
+    {
+        //var_dump($params); die();
+        $format     = ("" !== $format) ? ".".$format: "";
+        $this->req  = $this->host."/".$method.$format;
+        $ch         = curl_init($this->req);
+        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, (is_array($params)) ? $params: array($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($ch);
+        if (FALSE === $response && sfConfig::get('sf_environment') == "dev")
+            throw new Exception("can not connect to server skycloud, please check server is starting on $this->host");
+        
+        $this->response = $response;
+        curl_close($ch);
+        
+        return $response;
+    }
+    
+    public function get($method = "", $params = NULL, $format = "")
+    {
+        $this->params   = $params;
+        $pattern        = "/[:]([\w]+)/";
+        $method         = (preg_replace_callback($pattern, array($this, 'replaceRoute'), $method));
+        $params         = (array) $params;
+        $format         = ("" !== $format) ? ".".$format: "";
+        $this->req      = $this->host."/".$method.$format;
+        $ch             = curl_init($this->req);
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($ch);
+        if (FALSE === $response && sfConfig::get('sf_environment') == "dev")
+            throw new Exception("can not connect to server skycloud, please check server is starting on $this->host" );
+        
+        $this->response = $response;
+        curl_close($ch);
+        
+        return $response;
+    }
+    
+    public function put($method = "", $params = NULL, $format = "") {
+        $format     = ("" !== $format) ? ".".$format: "";
+        $this->req  = $this->host."/".$method.$format;
+        $ch         = curl_init($this->req);
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, (array) $params);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        
+        $response = curl_exec($ch);
+        if (FALSE === $response && sfConfig::get('sf_environment') == "dev")
+            throw new Exception("can not connect to server skycloud, please check server is starting on $this->host");
+        
+        $this->response = $response;
+        curl_close($ch);
+        
+        return $response;
+    }
+    
+    public function delete($method = "", $params = NULL, $format = "") {
+        $format     = ("" !== $format) ? ".".$format: "";
+        $this->req  = $this->host."/".$method.$format;
+        $ch         = curl_init($this->req);
+        
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, (array) $params);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        
+        $response = curl_exec($ch);
+        if (FALSE === $response && sfConfig::get('sf_environment') == "dev")
+            throw new Exception("can not connect to server skycloud, please check server is starting on $this->host");
+        
+        $this->response = $response;
+        curl_close($ch);
+        
+        return $response;
+    }
+    
+    public function getRequest()
+    {
+        return $this->req;
+    }
+}

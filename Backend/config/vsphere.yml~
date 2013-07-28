@@ -1,0 +1,5 @@
+endpoint:
+  host:     192.168.1.200
+  user:     root
+  password: E$xS3rv3r
+  insecure: USE_INSECURE_SSL
