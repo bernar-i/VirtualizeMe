@@ -73,7 +73,7 @@ include_once "../class/GetVM.php";
                 <div class="control-group">
                     <label class="control-label" for="inputPassword">MySQL Password</label>
                     <div class="controls">
-                        <input type="password" name="password" id="inputPassword" placeholder="password">
+                        <input type="password" name="password_mysql" id="inputPassword" placeholder="password">
                     </div>
                 </div>
                 <div class="control-group">
