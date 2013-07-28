@@ -35,12 +35,18 @@ module SkyCloud
             sc_log SkyCloudLogger::LOG_INFO, "[IaaS] Start clone virtual machine"
             oIaasManager = IaasManager.new
             oIaasManager.cloneVm(params)
-            p PaasManager.new.get_ip(params)
-            sleep(60)
-            p PaasManager.new.get_ip(params)
-            #oIaasManager.hostname(params)
-            #oIaasManager.user(params)
-            #oIaasManager.network(params)
+            for i in 1..60
+              sIp = PaasManager.new.get_ip(params)
+              if !sIp.nil?
+                break
+              end
+              sleep(5)
+            end
+            if !sIp.nil?
+              oIaasManager.hostname(params)
+              oIaasManager.user(params)
+              oIaasManager.network(params)
+            end
             sc_response true
           rescue ScError => e
             sc_response e
