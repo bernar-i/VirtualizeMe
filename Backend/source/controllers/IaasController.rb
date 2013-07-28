@@ -2,7 +2,6 @@
 
 require 'rbvmomi'
 require 'net/ssh'
-require 'net/ping'
 include Net
 
 module SkyCloud
@@ -36,10 +35,12 @@ module SkyCloud
             sc_log SkyCloudLogger::LOG_INFO, "[IaaS] Start clone virtual machine"
             oIaasManager = IaasManager.new
             oIaasManager.cloneVm(params)
+            p PaasManager.new.get_ip(params)
             sleep(60)
-            oIaasManager.hostname(params)
-            oIaasManager.user(params)
-            oIaasManager.network(params)
+            p PaasManager.new.get_ip(params)
+            #oIaasManager.hostname(params)
+            #oIaasManager.user(params)
+            #oIaasManager.network(params)
             sc_response true
           rescue ScError => e
             sc_response e
