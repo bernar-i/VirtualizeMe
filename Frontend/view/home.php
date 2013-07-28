@@ -1,5 +1,5 @@
 <?php
-include_once "../controller/HomeController.php";
+include_once "../class/GetVM.php";
 ?>
 <!DOCTYPE php>
 <html lang="en">
@@ -41,8 +41,8 @@ include_once "../controller/HomeController.php";
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li class="active"><a href="./home.php">Home</a></li>
-                            <li><a href="./iaas.html">IaaS</a></li>
-                            <li><a href="./paas.html">PaaS</a></li>
+                            <li><a href="./iaas.php">IaaS</a></li>
+                            <li><a href="./paas.php">PaaS</a></li>
                             <li><a href="./saas.html">SaaS</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->

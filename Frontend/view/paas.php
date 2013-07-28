@@ -1,3 +1,6 @@
+<?php
+include_once "../class/GetVM.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -38,8 +41,8 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li><a href="./home.php">Home</a></li>
-                            <li class="active"><a href="./iaas.html">IaaS</a></li>
-                            <li><a href="./paas.html">PaaS</a></li>
+                            <li><a href="./iaas.php">IaaS</a></li>
+                            <li class="active"><a href="./paas.php">PaaS</a></li>
                             <li><a href="./saas.html">SaaS</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
@@ -49,39 +52,26 @@
 
         <div class="container">
 
-            <h1>Create a Virtual Machine</h1>
+            <h1>Configure your hosting web platform</h1>
 
             <br />
-            <form class="form-horizontal" method="post" action="../controller/IaaSController.php">
+            <form class="form-horizontal" method="post" action="../controller/PaaSController.php">
                 <div class="control-group">
-                    <label class="control-label" for="inputEmail">Template</label>
+                    <label class="control-label" for="inputEmail">Virtual Machine</label>
                     <div class="controls">
-                        <select name="template">
-                            <option>vm-debian-template</option>
-                            <option>vm-template-debian</option>
+                        <select name="vm_name">
+                            <?php foreach ($aReturn as $index) : ?>
+                                <?php foreach ($index as $key => $value) : ?>
+                                    <?php if ($key == "name") : ?>
+                                        <option><?php echo $value; ?></option>        
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="inputEmail">New VM name</label>
-                    <div class="controls">
-                        <input type="text" name="vm_name" id="inputEmail" placeholder="hostname">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="inputEmail">New VM IP</label>
-                    <div class="controls">
-                        <input type="text" name="ip" id="inputEmail" placeholder="IP">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="inputEmail">Username</label>
-                    <div class="controls">
-                        <input type="text" name="login" id="inputEmail" placeholder="username">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="inputPassword">Password</label>
+                    <label class="control-label" for="inputPassword">MySQL Password</label>
                     <div class="controls">
                         <input type="password" name="password" id="inputPassword" placeholder="password">
                     </div>
@@ -97,4 +87,3 @@
 
     </body>
 </html>
-
