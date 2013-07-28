@@ -77,6 +77,18 @@ include_once "../class/GetVM.php";
                     </div>
                 </div>
                 <div class="control-group">
+                    <label class="control-label" for="inputEmail">Application Name</label>
+                    <div class="controls">
+                        <input type="text" name="application" id="inputEmail" placeholder="application">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputEmail">Repository Url GitHub</label>
+                    <div class="controls">
+                        <input type="text" name="repository" id="inputEmail" placeholder="repository">
+                    </div>
+                </div>
+                <div class="control-group">
                     <div class="controls">
                         <button type="submit" class="btn" name="send">Submit</button>
                     </div>
