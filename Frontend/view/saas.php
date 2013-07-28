@@ -1,3 +1,6 @@
+<?php
+include_once "../class/GetVM.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -40,7 +43,7 @@
                             <li><a href="./home.php">Home</a></li>
                             <li><a href="./iaas.php">IaaS</a></li>
                             <li><a href="./paas.php">PaaS</a></li>
-                            <li class="active"><a href="./saas.html">SaaS</a></li>
+                            <li class="active"><a href="./saas.php">SaaS</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
                 </div>
@@ -49,11 +52,44 @@
 
         <div class="container">
 
-            <h1>Bootstrap starter template</h1>
-            <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
+            <h1>Add a new user for your ownCloud application</h1>
+
+            <br />
+            <form class="form-horizontal" method="post" action="../controller/SaaSController.php">
+                <div class="control-group">
+                    <label class="control-label" for="inputEmail">Virtual Machine</label>
+                    <div class="controls">
+                        <select name="vm_name">
+                            <?php foreach ($aReturn as $index) : ?>
+                                <?php foreach ($index as $key => $value) : ?>
+                                    <?php if ($key == "name") : ?>
+                                        <option><?php echo $value; ?></option>        
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputEmail">Username</label>
+                    <div class="controls">
+                        <input type="text" name="username" id="inputEmail" placeholder="username">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputPassword">Password</label>
+                    <div class="controls">
+                        <input type="password" name="password" id="inputPassword" placeholder="password">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn" name="send">Submit</button>
+                    </div>
+                </div>
+            </form>
 
         </div> <!-- /container -->
 
     </body>
 </html>
-

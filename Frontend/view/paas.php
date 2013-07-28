@@ -43,7 +43,7 @@ include_once "../class/GetVM.php";
                             <li><a href="./home.php">Home</a></li>
                             <li><a href="./iaas.php">IaaS</a></li>
                             <li class="active"><a href="./paas.php">PaaS</a></li>
-                            <li><a href="./saas.html">SaaS</a></li>
+                            <li><a href="./saas.php">SaaS</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
                 </div>
