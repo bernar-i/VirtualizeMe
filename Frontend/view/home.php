@@ -97,7 +97,7 @@ include_once "../class/GetConfigSaas.php";
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                                 <?php $aConfigPaas = getConfigPaas(array("vm_name" => $_GET['vm_name'])); ?>
-                                <?php if (isset($aConfigPaas)) : ?>
+                                <?php if (count($aConfigPaas) != 0) : ?>
                                     <br />
                                     <h5><?php echo "PaaS"?></h5>
                                     <?php foreach ($aConfigPaas as $index => $val) : ?>
@@ -121,7 +121,7 @@ include_once "../class/GetConfigSaas.php";
                                     <?php endforeach; ?>
                                 <?php endif ?>
                                 <?php $aConfigSaas = getConfigSaas(array("vm_name" => $_GET['vm_name'])); ?>
-                                <?php if (isset($aConfigSaas)) : ?>
+                                <?php if (count($aConfigSaas) != 0) : ?>
                                     <h5><?php echo "SaaS"?></h5>
                                     <?php foreach ($aConfigSaas as $index => $val) : ?>
                                         <?php echo ucfirst($index); ?>
