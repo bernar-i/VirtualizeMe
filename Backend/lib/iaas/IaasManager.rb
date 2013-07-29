@@ -12,11 +12,20 @@ module SkyCloud
 
     def get_ip aParams
       SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method get_ip"
+      sIp = nil
       oRbVmomiManager = RbVmomiManager.new
       oVim = oRbVmomiManager.connect
       oVm = oVim.serviceInstance.find_datacenter.find_vm(aParams[:vm_name])
 
-      sIp = oVm.summary.guest.ipAddress
+      if (!oVm.nil? && oVm.summary.runtime.powerState == "poweredOn")
+        for i in 1..30
+          sIp = oVm.summary.guest.ipAddress
+          if !sIp.nil?
+            break
+          end
+          sleep(5)
+        end
+      end
 
       oRbVmomiManager.close
 
@@ -30,10 +39,12 @@ module SkyCloud
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(aParams[:template])
 
-      relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec
-      spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => true, :template => false)
+      if !oVm.nil?
+        relocateSpec = RbVmomi::VIM.VirtualMachineRelocateSpec
+        spec = RbVmomi::VIM.VirtualMachineCloneSpec(:location => relocateSpec, :powerOn => true, :template => false)
 
-      oVm.CloneVM_Task(:folder => oVm.parent, :name => aParams[:vm_name], :spec => spec).wait_for_completion
+        oVm.CloneVM_Task(:folder => oVm.parent, :name => aParams[:vm_name], :spec => spec).wait_for_completion
+      end
 
       oRbVmomiManager.close
     end
@@ -44,21 +55,23 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
       oDc = oVim.serviceInstance.find_datacenter
 
-      aResponseVm = []
-      oDc.vmFolder.childEntity.grep(RbVmomi::VIM::VirtualMachine).find do |vm|
-        aResponseVm << {
-          'name' => vm.name,
-          'os' => vm.summary.config.guestFullName,
-          'memoryMB' => vm.summary.config.memorySizeMB,
-          'cpu' => vm.summary.config.numCpu,
-          'network interface' => vm.summary.config.numEthernetCards,
-          'ip' => vm.summary.guest.ipAddress,
-          'vdisk' => vm.summary.config.numVirtualDisks,
-          'state' => vm.summary.runtime.powerState,
-          'uptime' => vm.summary.runtime.bootTime
-        }
-        puts vm
-     end
+      if !oDc.nil?
+        aResponseVm = []
+        oDc.vmFolder.childEntity.grep(RbVmomi::VIM::VirtualMachine).find do |vm|
+          aResponseVm << {
+            'name' => vm.name,
+            'os' => vm.summary.config.guestFullName,
+            'memoryMB' => vm.summary.config.memorySizeMB,
+            'cpu' => vm.summary.config.numCpu,
+            'network interface' => vm.summary.config.numEthernetCards,
+            'ip' => vm.summary.guest.ipAddress,
+            'vdisk' => vm.summary.config.numVirtualDisks,
+            'state' => vm.summary.runtime.powerState,
+            'uptime' => vm.summary.runtime.bootTime
+          }
+          puts vm
+        end
+      end
 
       oRbVmomiManager.close
       aResponseVm
@@ -70,7 +83,19 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      oVm.Destroy_Task()
+      if !oVm.nil?
+        oVm.Destroy_Task()
+
+        sYml = "config/#{sVm}_paas.yml"
+        if File.exist?(sYml)
+          delete(sYml)
+        end
+
+        sYml = "config/#{sVm}_saas.yml"
+        if File.exist?(sYml)
+          delete(sYml)
+        end
+      end
 
       oRbVmomiManager.close
     end
@@ -81,7 +106,9 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      oVm.PowerOnVM_Task.wait_for_completion
+      if !oVm.nil?
+        oVm.PowerOnVM_Task.wait_for_completion
+      end
 
       oRbVmomiManager.close
     end
@@ -92,7 +119,9 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      oVm.PowerOffVM_Task.wait_for_completion
+      if !oVm.nil?
+        oVm.PowerOffVM_Task.wait_for_completion
+      end
 
       oRbVmomiManager.close
     end
@@ -103,7 +132,9 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      oVm.ShutdownGuest
+      if !oVm.nil?
+        oVm.ShutdownGuest
+      end
 
       oRbVmomiManager.close
     end
@@ -114,36 +145,35 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      oVm.RebootGuest
+      if !oVom.nil?
+        oVm.RebootGuest
+      end
 
       oRbVmomiManager.close
     end
 
    def hostname aParams
-     begin
-       SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method hostname"
-       ssh = Net::SSH.start('192.168.202.100', 'root')
-       ssh.exec!("sed -i 's/vm-debian-template/#{aParams[:vm_name]}/g' /etc/hostname")
-       ssh.exec!('/etc/init.d/hostname.sh')
-       ssh.close
-     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-       puts "The virtual machine #{aParams[:vm_name]} is still booting"
-       sleep(1)
-       retry
-     end
+     SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method hostname"
+     sIp = get_ip(aParams)
+     ssh = Net::SSH.start(sIp, 'root')
+     ssh.exec!("sed -i 's/#{aParams[:template]}/#{aParams[:vm_name]}/g' /etc/hostname")
+     ssh.exec!('/etc/init.d/hostname.sh')
+     ssh.close
    end
 
    def network aParams
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method network"
-     ssh = Net::SSH.start('192.168.202.100', 'root')
-     ssh.exec!("sed -i 's/192.168.202.100/#{aParams[:ip]}/g' /etc/network/interfaces")
+     sIp = get_ip(aParams)
+     ssh = Net::SSH.start(sIp, 'root')
+     ssh.exec!("sed -i 's/#{sIp}/#{aParams[:ip]}/g' /etc/network/interfaces")
      ssh.close
      reboot(aParams[:vm_name])
    end
 
    def user aParams
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method user"
-     ssh = Net::SSH.start('192.168.202.100', 'root')
+     sIp = get_ip(aParams)
+     ssh = Net::SSH.start(sIp, 'root')
       ssh.exec!("useradd -m -s /bin/bash #{aParams[:login]} -p `mkpasswd #{aParams[:password]}`")
      ssh.close
    end

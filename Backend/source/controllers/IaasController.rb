@@ -35,13 +35,7 @@ module SkyCloud
             sc_log SkyCloudLogger::LOG_INFO, "[IaaS] Start clone virtual machine"
             oIaasManager = IaasManager.new
             oIaasManager.cloneVm(params)
-            for i in 1..60
-              sIp = oIaasManager.get_ip(params)
-              if !sIp.nil?
-                break
-              end
-              sleep(5)
-            end
+            sIp = oIaasManager.get_ip(params)
             if !sIp.nil?
               oIaasManager.hostname(params)
               oIaasManager.user(params)

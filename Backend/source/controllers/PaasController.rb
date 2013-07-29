@@ -92,7 +92,7 @@ module SkyCloud
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Get config PaaS : #{params[:vm_name]}"
             oPaasManager = PaasManager.new(params)
             aResponse = oPaasManager.getConfig(params)
-            !aResponse.nil? ? (sc_response aResponse) : (sc_response true)
+            (!aResponse == false) ? (sc_response aResponse) : (sc_response true)
           rescue ScError => e
             sc_response e
           end
