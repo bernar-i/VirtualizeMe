@@ -1,15 +1,19 @@
 #!/usr/bin/env ruby
 
 require 'rconfig'
+require 'yaml'
 
 module SkyCloud
   autoload :IaasManager, "iaas/IaasManager"
 
   class SaasManager
-    attr_reader :oVim
+    attr_reader :sIp, :sPassword
 
     def initialize aParams
       @sIp = IaasManager.new.get_ip(aParams)
+      sYml = "#{aParams[:vm_name]}_paas.yml"
+      sFile = YAML.load(File.open("config/#{sYml}"))
+      @sPassword = sFile["mysql_password"]
     end
 
    def configureOwncloud aParams
@@ -21,9 +25,9 @@ module SkyCloud
      ssh.exec!("echo 'deb http://download.opensuse.org/repositories/isv:ownCloud:community/Debian_7.0/ /' >> /etc/apt/sources.list.d/owncloud.list")
      ssh.exec!("aptitude update")
      ssh.exec!("aptitude install owncloud -y")
-     ssh.exec!("mysql -u root -pVirtualizeMe42 -e 'CREATE USER 'owncloud'@'localhost' IDENTIFIED BY \"OwnCloud42\";'")
-     ssh.exec!("mysql -u root -pVirtualizeMe42 -e 'CREATE DATABASE IF NOT EXISTS owncloud;'")
-     ssh.exec!("mysql -u root -pVirtualizeMe42 -e 'GRANT ALL PRIVILEGES ON owncloud.* TO 'owncloud'@'localhost' IDENTIFIED BY \"OwnCloud42\";'")
+     ssh.exec!("mysql -u root -p\"#{@sPassword}\" -e 'CREATE USER 'owncloud'@'localhost' IDENTIFIED BY \"OwnCloud42\";'")
+     ssh.exec!("mysql -u root -p\"#{@sPassword}\" -e 'CREATE DATABASE IF NOT EXISTS owncloud;'")
+     ssh.exec!("mysql -u root -p\"#{@sPassword}\" -e 'GRANT ALL PRIVILEGES ON owncloud.* TO 'owncloud'@'localhost' IDENTIFIED BY \"OwnCloud42\";'")
      ssh.exec!("echo '<?php' > /var/www/owncloud/config/autoconfig.php")
      ssh.exec!("echo '$AUTOCONFIG = array(' >> /var/www/owncloud/config/autoconfig.php")
      ssh.exec!("echo '  \"dbtype\"        => \"mysql\",' >> /var/www/owncloud/config/autoconfig.php")
@@ -42,8 +46,24 @@ module SkyCloud
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method user"
      ssh = Net::SSH.start(@sIp, 'root')
      password = Digest::SHA1.hexdigest "#{aParams[:password]}"
-     res = ssh.exec!("mysql -u root -pVirtualizeMe42 -e 'INSERT INTO owncloud.users (uid,password) values(\"#{aParams[:username]}\",\"#{password}\");'")
+     res = ssh.exec!("mysql -u root -p#{@sPassword} -e 'INSERT INTO owncloud.users (uid,password) values(\"#{aParams[:username]}\",\"#{password}\");'")
    end
 
+    def setYml aParams
+      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method setYml"
+      hData = {}
+      hData = {
+        "ownCloud" => {
+          "url" => "http://#{@sIp}/owncloud"
+        }
+      }
+      hData[aParams[:username]] = {
+        "password" => aParams[:password]
+      }
+      File.open("config/#{aParams[:vm_name]}_saas.yml", "w") { |f|
+        f.write(hData.to_yaml)
+      }
+    end
+  
   end
 end
