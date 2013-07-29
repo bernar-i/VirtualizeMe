@@ -98,8 +98,9 @@ include_once "../class/GetConfigSaas.php";
                                 <?php endforeach; ?>
                                 <?php $aConfigPaas = getConfigPaas(array("vm_name" => $_GET['vm_name'])); ?>
                                 <?php if (isset($aConfigPaas)) : ?>
+                                    <br />
+                                    <h5><?php echo "PaaS"?></h5>
                                     <?php foreach ($aConfigPaas as $index => $val) : ?>
-                                        <br />
                                         <?php echo ucfirst($index); ?>
                                         <?php //if (isset($val)) : echo $val; endif;    ?>
                                         <?php if (!is_object($val)) : ?>
@@ -116,14 +117,16 @@ include_once "../class/GetConfigSaas.php";
                                                 <br />
                                             <?php endforeach; ?>
                                         <?php endif; ?>
+                                        <br />
                                     <?php endforeach; ?>
                                 <?php endif ?>
                                 <?php $aConfigSaas = getConfigSaas(array("vm_name" => $_GET['vm_name'])); ?>
                                 <?php if (isset($aConfigSaas)) : ?>
+                                    <h5><?php echo "SaaS"?></h5>
                                     <?php foreach ($aConfigSaas as $index => $val) : ?>
                                         <?php echo ucfirst($index); ?>
-                                        <br />
                                         <?php foreach ($val as $key => $value) : ?>
+                                            <br />
                                             <?php echo ucfirst($key) ?>
                                             <?php if (strstr($value, "http")) : ?>
                                                 : <a href="<?php echo $value ?>"><?php echo $value ?></a>
