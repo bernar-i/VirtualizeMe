@@ -5,6 +5,7 @@ require 'yaml'
 
 module SkyCloud
   autoload :IaasManager, "iaas/IaasManager"
+  autoload :PaasManager, "paas/PaasManager"
 
   class SaasManager
     attr_reader :sIp, :sPassword
@@ -20,6 +21,11 @@ module SkyCloud
     end
 
    def configureOwncloud aParams
+     if @sPassword.nil?
+       paas = PaasManager.new(aParams)
+       paas.installPackage(aParams, "mysql-server")
+       @sPassword = "VirtualizeMe42!"
+     end
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method configureOwncloud"
      ssh = Net::SSH.start(@sIp, 'root')
      ssh.exec!("wget http://download.opensuse.org/repositories/isv:ownCloud:community/Debian_7.0/Release.key")
@@ -46,6 +52,9 @@ module SkyCloud
    end
 
    def user aParams
+     if @sPassword.nil?
+       @sPassword = "VirtualizeMe42!"
+     end
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method user"
      ssh = Net::SSH.start(@sIp, 'root')
      password = Digest::SHA1.hexdigest "#{aParams[:password]}"
