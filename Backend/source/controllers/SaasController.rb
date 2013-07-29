@@ -34,7 +34,10 @@ module SkyCloud
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[SaaS] Configure virtual machine"
             oSaasManager = SaasManager.new(params)
-            oSaasManager.configureOwncloud(params)
+            sYml = "config/#{params[:vm_name]}_saas.yml"
+            if !File.exist?(sYml)
+              oSaasManager.configureOwncloud(params)
+            end
             oSaasManager.user(params)
             oSaasManager.setYml(params)
             sc_response true
