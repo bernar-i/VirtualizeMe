@@ -36,6 +36,7 @@ module SkyCloud
             oSaasManager = SaasManager.new(params)
             oSaasManager.configureOwncloud(params)
             oSaasManager.user(params)
+            oSaasManager.setYml(params)
             sc_response true
           rescue ScError => e
             sc_response e

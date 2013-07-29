@@ -21,17 +21,20 @@ module SkyCloud
       }
 
       desc "Configure a Virtual Machine on a ESXi hypervisor"
-      namespace 'configure' do
+      namespace 'installPackages' do
         desc ""
         params do
           requires :vm_name, :type => String, :desc => ""
-          requires :password, :type => String, :desc => ""
+          requires :password_mysql, :type => String, :desc => ""
         end
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Configure virtual machine"
             oPaasManager = PaasManager.new(params)
             oPaasManager.installPackages(params)
+            if !params[:repository].nil?
+              oPaasManager.gitClone(params)
+            end
             sc_response true
           rescue ScError => e
             sc_response e
@@ -65,7 +68,6 @@ module SkyCloud
         params do
           requires :vm_name, :type => String, :desc => ""
           requires :application, :type => String, :desc => ""
-          requires :repository, :type => String, :desc => ""
         end
         post do
           begin

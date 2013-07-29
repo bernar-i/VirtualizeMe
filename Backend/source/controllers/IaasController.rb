@@ -36,7 +36,7 @@ module SkyCloud
             oIaasManager = IaasManager.new
             oIaasManager.cloneVm(params)
             for i in 1..60
-              sIp = PaasManager.new.get_ip(params)
+              sIp = oIaasManager.get_ip(params)
               if !sIp.nil?
                 break
               end
