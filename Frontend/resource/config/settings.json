@@ -5,10 +5,9 @@
 	    "port" : "9090"
 	},
 
-    "user" : [
+    "user" :
 	{
 	    "user" : "admin",
 	    "password" : "T0tol1mb042"
 	}
-    ]
 }

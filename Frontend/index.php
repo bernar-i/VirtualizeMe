@@ -24,7 +24,7 @@
 
                     </a>
 
-                    <a href="#" class="brand">VirtualizeMe</a>
+                    <a href="./index.php" class="brand">VirtualizeMe</a>
 
                     <div class="nav-collapse collapse pull-right">
                         <ul class="nav">
@@ -47,9 +47,11 @@
                 <div class="row ">
                     <div class="center span4 well">
                         <legend>Please Sign In</legend>
+                        <?php if ($_SERVER['HTTP_REFERER'] == "http://www.virtualizeme.local/controller/SignInController.php") : ?>
                         <div class="alert alert-error">
                             <a class="close" data-dismiss="alert" href="#">×</a>Incorrect Username or Password!
                         </div>
+                        <?php endif;?>
                         <form method="POST" action="controller/SignInController.php" accept-charset="UTF-8">
                             <input type="text" id="username" class="span4" name="username" placeholder="Username" />
                             <input type="password" id="password" class="span4" name="password" placeholder="Password" />
