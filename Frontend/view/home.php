@@ -56,9 +56,10 @@ include_once "../class/GetConfigSaas.php";
 
             <?php $vm = array() ?>
             <?php $i = 0 ?>
-            <?php foreach ($aReturn as $index) : ?>
+            <?php apc_add('aReturn', $aReturn) ?>
+            <?php foreach (apc_fetch('aReturn') as $index) : ?>
                 <?php foreach ($index as $key => $value) : ?>
-                    <?php echo ucfirst($key) . " : " . $value . " "; ?>
+                    <?php echo ucfirst($key) . " : " . $value . " " ?>
                     <?php if ($key == "name") : ?>
                         <?php $vm[$i] = $value ?>
                         <a href="../controller/PowerOnController.php?vm_name=<?php echo $value ?>" title="Power ON" class="btn btn-success btn-small"><i class="icon-white icon-play"></i></a>
@@ -69,23 +70,25 @@ include_once "../class/GetConfigSaas.php";
                         <?php endif; ?>
                     <br />
                 <?php endforeach; ?>
-                <?php $aConfig = getConfigPaas($params = array("vm_name" => $vm[$i])); ?>
-                <?php if (isset($aConfig)) : ?>
-                    <?php foreach ($aConfig as $index => $val) : ?>
+                <?php $aConfigPaas = getConfigPaas($params = array("vm_name" => $vm[$i])); ?>
+                <?php if (isset($aConfigPaas)) : ?>
+                    <?php apc_add('aConfigPaas', $aConfigPaas) ?>
+                    <?php foreach (apc_fetch('aConfigPass') as $index => $val) : ?>
                         <?php echo ucfirst($index); ?>
-                        <?php //if (isset($val)) : echo $val; endif; ?>
+                        <?php //if (isset($val)) : echo $val; endif;    ?>
                         <br />
                         <?php foreach ($val as $key => $value) : ?>
                             <?php echo ucfirst($key) . " : " . $value . " "; ?>
                             <br />
                         <?php endforeach; ?>
                     <?php endforeach; ?>
-                <?php endif?>
-                <?php $aConfig = getConfigSaas($params = array("vm_name" => $vm[$i])); ?>
-                <?php if (isset($aConfig)) : ?>
-                    <?php foreach ($aConfig as $index => $val) : ?>
+                <?php endif ?>
+                <?php $aConfigSaas = getConfigSaas($params = array("vm_name" => $vm[$i])); ?>
+                <?php if (isset($aConfigSaas)) : ?>
+                    <?php apc_add('aConfigSaas', $aConfigSaas) ?>
+                    <?php foreach (apc_fetch('aConfigSaas') as $index => $val) : ?>
                         <?php echo ucfirst($index); ?>
-                        <?php //if (isset($val)) : echo $val; endif; ?>
+                        <?php //if (isset($val)) : echo $val; endif;    ?>
                         <br />
                         <?php foreach ($val as $key => $value) : ?>
                             <?php echo ucfirst($key) . " : " . $value . " "; ?>
@@ -97,6 +100,7 @@ include_once "../class/GetConfigSaas.php";
                 <br />
                 <br />
             <?php endforeach; ?>
+            <?php //apc_delete('aConfigPass')    ?>
 
         </div> <!-- /container -->
 
