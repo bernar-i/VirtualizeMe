@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 include_once "../class/GetVM.php";
 ?>
 <?php if (isset($_SESSION['username']) && isset($_SESSION['password'])) : ?>
@@ -104,7 +106,7 @@ include_once "../class/GetVM.php";
                     </div>
                     <div class="control-group">
                         <div class="controls">
-                            <button type="submit" class="btn" name="send">Submit</button>
+                            <button type="submit" id="fat-btn" class="btn" data-loading-text="Loading..." name="send" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </form>

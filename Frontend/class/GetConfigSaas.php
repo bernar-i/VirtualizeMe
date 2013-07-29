@@ -1,5 +1,6 @@
 <?php
-session_start();
+
+//session_start();
 
 /*
  * To change this template, choose Tools | Templates
@@ -14,11 +15,12 @@ function getConfigSaas($params) {
     $aReturnSaasConfig = array();
     if ($oResponse != NULL) {
         if (true === (bool) $oResponse->screquest->successful) {
-            $aReturnSaasConfig = $oResponse->screquest->return;
+            if (isset($oResponse->screquest->return))
+                $aReturnSaasConfig = $oResponse->screquest->return;
         }
     }
-    
-    return $aReturnSaasConfig;
+    if (isset($aReturnSaasConfig))
+        return $aReturnSaasConfig;
 }
 
 ?>

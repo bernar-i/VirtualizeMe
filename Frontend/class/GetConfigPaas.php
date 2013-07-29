@@ -1,5 +1,6 @@
 <?php
-session_start();
+
+//session_start();
 
 /*
  * To change this template, choose Tools | Templates
@@ -14,11 +15,12 @@ function getConfigPaas($params) {
     $aReturnPaasConfig = array();
     if ($oResponse != NULL) {
         if (true === (bool) $oResponse->screquest->successful) {
-            $aReturnPaasConfig = $oResponse->screquest->return;
+            if (isset($oResponse->screquest->return))
+                $aReturnPaasConfig = $oResponse->screquest->return;
         }
     }
-    
-    return $aReturnPaasConfig;
+    if (isset($aReturnPaasConfig))
+        return $aReturnPaasConfig;
 }
 
 ?>

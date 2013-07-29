@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 
 /*
  * To change this template, choose Tools | Templates
