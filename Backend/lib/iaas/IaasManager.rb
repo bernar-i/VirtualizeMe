@@ -145,7 +145,7 @@ module SkyCloud
       oVim = oRbVmomiManager.connect
 
       oVm = oVim.serviceInstance.find_datacenter.find_vm(sVm)
-      if !oVom.nil?
+      if !oVm.nil?
         oVm.RebootGuest
       end
 
