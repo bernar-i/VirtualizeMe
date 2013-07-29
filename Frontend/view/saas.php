@@ -15,7 +15,7 @@ include_once "../class/GetVM.php";
 
             <!-- Le styles -->
             <link href="../resource/bootstrap/css/bootstrap.css" rel="stylesheet">
-            <link rel="stylesheet" href="../resource/css/custom.css" />
+            <!-- link rel="stylesheet" href="../resource/css/custom.css" / -->
             <style>
                 body {
                     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */

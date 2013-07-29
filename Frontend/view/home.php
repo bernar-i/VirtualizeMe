@@ -16,7 +16,7 @@ include_once "../class/GetConfigSaas.php";
 
             <!-- Le styles -->
             <link href="../resource/bootstrap/css/bootstrap.css" rel="stylesheet">
-            <link rel="stylesheet" href="../resource/css/custom.css" />
+            <!-- link rel="stylesheet" href="../resource/css/custom.css" / -->
             <style>
                 body {
                     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -63,59 +63,81 @@ include_once "../class/GetConfigSaas.php";
 
             <div class="container">
 
-                <?php $vm = array() ?>
-                <?php $i = 0 ?>
-                <?php foreach ($aReturn as $index) : ?>
-                    <?php foreach ($index as $key => $value) : ?>
-                        <?php echo ucfirst($key) . " : " . $value . " " ?>
-                        <?php if ($key == "name") : ?>
-                            <?php $vm[$i] = $value ?>
-                            <a href="../controller/PowerOnController.php?vm_name=<?php echo $value ?>" title="Power ON" class="btn btn-success btn-small"><i class="icon-white icon-play"></i></a>
-                            <a href="../controller/RebootController.php?vm_name=<?php echo $value ?>" title="Reboot" class="btn btn-warning btn-small"><i class="icon-white icon-repeat"></i></a>
-                            <a href="../controller/PowerOffController.php?vm_name=<?php echo $value ?>" title="Power OFF" class="btn btn-danger btn-small"><i class="icon-white icon-stop"></i></a>
-                            <a href="../controller/ShutdownController.php?vm_name=<?php echo $value ?>" title="Shutdown" class="btn btn-danger btn-small"><i class="icon-white icon-off"></i></a>
-                            <a href="../controller/DeleteController.php?vm_name=<?php echo $value ?>" title="Delete" class="btn btn-danger btn-small"><i class="icon-white icon-trash"></i></a>
+                <div class="row">
+                    <div class="span3 well well-small">
+                        <?php foreach ($aReturn as $index) : ?>
+                            <?php foreach ($index as $key => $value) : ?>
+                                <?php if ($key == "name") : ?>
+                                    <a href="./home.php?vm_name=<?php echo $value ?>"><h4><i class="icon-leaf"></i>&nbsp;<?php echo $value ?></h4></a>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="span8">
+                        <?php if (isset($_GET['vm_name'])) : ?>
+                            <div class="page-header">
+                                <h1 id="glyphicons"><?php print $_GET['vm_name']; ?>
+                                    <span class="pull-right">
+                                        <a href="../controller/PowerOnController.php?vm_name=<?php echo $_GET['vm_name'] ?>" title="Power ON" class="btn btn-success btn-small"><i class="icon-white icon-play"></i></a>
+                                        <a href="../controller/RebootController.php?vm_name=<?php echo $_GET['vm_name'] ?>" title="Reboot" class="btn btn-warning btn-small"><i class="icon-white icon-repeat"></i></a>
+                                        <a href="../controller/PowerOffController.php?vm_name=<?php echo $_GET['vm_name'] ?>" title="Power OFF" class="btn btn-danger btn-small"><i class="icon-white icon-stop"></i></a>
+                                        <a href="../controller/ShutdownController.php?vm_name=<?php echo $_GET['vm_name'] ?>" title="Shutdown" class="btn btn-danger btn-small"><i class="icon-white icon-off"></i></a>
+                                        <a href="../controller/DeleteController.php?vm_name=<?php echo $_GET['vm_name'] ?>" title="Delete" class="btn btn-danger btn-small"><i class="icon-white icon-trash"></i></a>
+                                    </span>
+                                </h1>
+                            </div>
+                            <div>
+                                <?php foreach ($aReturn as $index) : ?>
+                                    <?php if ($index->name == $_GET['vm_name']) : ?>
+                                        <?php foreach ($index as $key => $value) : ?>
+                                            <?php echo ucfirst($key) . " : " . $value . " " ?>
+                                            <br />
+                                        <?php endforeach; ?>
+                                        <?php break; ?>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <?php $aConfigPaas = getConfigPaas(array("vm_name" => $_GET['vm_name'])); ?>
+                                <?php if (isset($aConfigPaas)) : ?>
+                                    <?php foreach ($aConfigPaas as $index => $val) : ?>
+                                        <br />
+                                        <?php echo ucfirst($index); ?>
+                                        <?php //if (isset($val)) : echo $val; endif;    ?>
+                                        <?php if (!is_object($val)) : ?>
+                                            <?php print " : " . $val ?>
+                                        <?php else : ?>
+                                            <br />
+                                            <?php foreach ($val as $key => $value) : ?>
+                                                <?php echo ucfirst($key) ?>
+                                                <?php if (strstr($value, "http")) : ?>
+                                                    : <a href="<?php echo $value ?>"><?php echo $value ?></a>
+                                                <?php else : ?>
+                                                    <?php echo " : " . $value . " " ?>
+                                                <?php endif; ?>
+                                                <br />
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php endif ?>
+                                <?php $aConfigSaas = getConfigSaas(array("vm_name" => $_GET['vm_name'])); ?>
+                                <?php if (isset($aConfigSaas)) : ?>
+                                    <?php foreach ($aConfigSaas as $index => $val) : ?>
+                                        <?php echo ucfirst($index); ?>
+                                        <br />
+                                        <?php foreach ($val as $key => $value) : ?>
+                                            <?php echo ucfirst($key) ?>
+                                            <?php if (strstr($value, "http")) : ?>
+                                                : <a href="<?php echo $value ?>"><?php echo $value ?></a>
+                                            <?php else : ?>
+                                                <?php echo " : " . $value . " " ?>
+                                            <?php endif; ?>
+                                            <br />
+                                        <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             <?php endif; ?>
-                        <br />
-                    <?php endforeach; ?>
-                    <?php $aConfigPaas = getConfigPaas($params = array("vm_name" => $vm[$i])); ?>
-                    <?php if (isset($aConfigPaas)) : ?>
-                        <?php foreach ($aConfigPaas as $index => $val) : ?>
-                            <?php echo ucfirst($index); ?>
-                            <?php //if (isset($val)) : echo $val; endif;    ?>
-                            <br />
-                            <?php foreach ($val as $key => $value) : ?>
-                                <?php echo ucfirst($key) ?>
-                                <?php if (strstr($value, "http")) : ?>
-                                    : <a href="<?php echo $value ?>"><?php echo $value ?></a>
-                                <?php else : ?>
-                                    <?php echo " : " . $value . " " ?>
-                                <?php endif; ?>
-                                <br />
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                    <?php endif ?>
-                    <?php $aConfigSaas = getConfigSaas($params = array("vm_name" => $vm[$i])); ?>
-                    <?php if (isset($aConfigSaas)) : ?>
-                        <?php foreach ($aConfigSaas as $index => $val) : ?>
-                            <?php echo ucfirst($index); ?>
-                            <?php //if (isset($val)) : echo $val; endif;    ?>
-                            <br />
-                            <?php foreach ($val as $key => $value) : ?>
-                                <?php echo ucfirst($key) ?>
-                                <?php if (strstr($value, "http")) : ?>
-                                    : <a href="<?php echo $value ?>"><?php echo $value ?></a>
-                                <?php else : ?>
-                                    <?php echo " : " . $value . " " ?>
-                                <?php endif; ?>
-                                <br />
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    <?php $i++; ?>
-                    <br />
-                    <br />
-                <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
 
             </div> <!-- /container -->
 

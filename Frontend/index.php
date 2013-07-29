@@ -9,7 +9,7 @@
         <!-- StyleSheet -->
         <link rel="stylesheet" href="resource/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="resource/bootstrap/css/bootstrap-responsive.css" />
-        <link rel="stylesheet" href="resource/css/custom.css" />
+        <!-- link rel="stylesheet" href="../resource/css/custom.css" / -->
     </head>
 
     <body>
@@ -47,7 +47,7 @@
                 <div class="row ">
                     <div class="center span4 well">
                         <legend>Please Sign In</legend>
-                        <?php if (strstr($_SERVER['HTTP_REFERER'], "SignInController.php")) : ?>
+                        <?php if (isset($_SERVER['HTTP_REFERER']) && (strstr($_SERVER['HTTP_REFERER'], "SignInController.php"))) : ?>
                         <div class="alert alert-error">
                             <a class="close" data-dismiss="alert" href="#">×</a>Incorrect Username or Password!
                         </div>
