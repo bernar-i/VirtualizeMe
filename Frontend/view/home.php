@@ -1,5 +1,7 @@
 <?php
 include_once "../class/GetVM.php";
+include_once "../class/GetConfigPaas.php";
+include_once "../class/GetConfigSaas.php";
 ?>
 <!DOCTYPE php>
 <html lang="en">
@@ -52,10 +54,13 @@ include_once "../class/GetVM.php";
 
         <div class="container">
 
+            <?php $vm = array() ?>
+            <?php $i = 0 ?>
             <?php foreach ($aReturn as $index) : ?>
                 <?php foreach ($index as $key => $value) : ?>
                     <?php echo ucfirst($key) . " : " . $value . " "; ?>
                     <?php if ($key == "name") : ?>
+                        <?php $vm[$i] = $value ?>
                         <a href="../controller/PowerOnController.php?vm_name=<?php echo $value ?>" title="Power ON" class="btn btn-success btn-small"><i class="icon-white icon-play"></i></a>
                         <a href="../controller/RebootController.php?vm_name=<?php echo $value ?>" title="Reboot" class="btn btn-warning btn-small"><i class="icon-white icon-repeat"></i></a>
                         <a href="../controller/PowerOffController.php?vm_name=<?php echo $value ?>" title="Power OFF" class="btn btn-danger btn-small"><i class="icon-white icon-stop"></i></a>
@@ -64,6 +69,32 @@ include_once "../class/GetVM.php";
                         <?php endif; ?>
                     <br />
                 <?php endforeach; ?>
+                <?php $aConfig = getConfigPaas($params = array("vm_name" => $vm[$i])); ?>
+                <?php if (isset($aConfig)) : ?>
+                    <?php foreach ($aConfig as $index => $val) : ?>
+                        <?php echo ucfirst($index); ?>
+                        <?php //if (isset($val)) : echo $val; endif; ?>
+                        <br />
+                        <?php foreach ($val as $key => $value) : ?>
+                            <?php echo ucfirst($key) . " : " . $value . " "; ?>
+                            <br />
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                <?php endif?>
+                <?php $aConfig = getConfigSaas($params = array("vm_name" => $vm[$i])); ?>
+                <?php if (isset($aConfig)) : ?>
+                    <?php foreach ($aConfig as $index => $val) : ?>
+                        <?php echo ucfirst($index); ?>
+                        <?php //if (isset($val)) : echo $val; endif; ?>
+                        <br />
+                        <?php foreach ($val as $key => $value) : ?>
+                            <?php echo ucfirst($key) . " : " . $value . " "; ?>
+                            <br />
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php $i++; ?>
+                <br />
                 <br />
             <?php endforeach; ?>
 
