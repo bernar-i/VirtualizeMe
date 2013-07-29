@@ -47,7 +47,7 @@
                 <div class="row ">
                     <div class="center span4 well">
                         <legend>Please Sign In</legend>
-                        <?php if ($_SERVER['HTTP_REFERER'] == "http://www.virtualizeme.local/controller/SignInController.php") : ?>
+                        <?php if (strstr($_SERVER['HTTP_REFERER'], "SignInController.php")) : ?>
                         <div class="alert alert-error">
                             <a class="close" data-dismiss="alert" href="#">×</a>Incorrect Username or Password!
                         </div>
