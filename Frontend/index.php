@@ -9,7 +9,7 @@
         <!-- StyleSheet -->
         <link rel="stylesheet" href="resource/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="resource/bootstrap/css/bootstrap-responsive.css" />
-        <!-- link rel="stylesheet" href="../resource/css/custom.css" / -->
+        <link rel="stylesheet" href="../resource/css/custom.css" />
     </head>
 
     <body>
