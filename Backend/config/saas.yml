@@ -1,5 +1,0 @@
-WebServer:
-  ownCloud:
-    url:              http://192.168.202.120/ownCloud
-    admin:
-      password:       aragorn
