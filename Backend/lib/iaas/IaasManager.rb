@@ -88,12 +88,12 @@ module SkyCloud
 
         sYml = "config/#{sVm}_paas.yml"
         if File.exist?(sYml)
-          delete(sYml)
+          File.delete(sYml)
         end
 
         sYml = "config/#{sVm}_saas.yml"
         if File.exist?(sYml)
-          delete(sYml)
+          File.delete(sYml)
         end
       end
 
