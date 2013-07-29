@@ -12,8 +12,6 @@ module SkyCloud
     def initialize aParams
       @sIp = IaasManager.new.get_ip(aParams)
       aParams[:password_mysql].nil? ? @sPassword = "VirtualizeMe42!" : @sPassword = aParams[:password_mysql]
-      #sYml = "#{aParams[:vm_name]}_paas.yml"
-      # @sFile = YAML.load(File.open("config/#{sYml}"))
     end
 
     def installPackages aParams
@@ -76,6 +74,16 @@ module SkyCloud
       ssh = Net::SSH.start(@sIp, 'root')
       ssh.exec!("cd /var/www/#{aParams[:application]} && git pull")
       ssh.close
+    end
+
+    def getConfig aParams
+      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[PaaS] Method getConfig"
+      sYml = "config/#{aParams[:vm_name]}_paas.yml"
+      if File.exist?(sYml)
+        YAML.load(File.open(sYml))
+      else
+        false
+      end
     end
 
   end

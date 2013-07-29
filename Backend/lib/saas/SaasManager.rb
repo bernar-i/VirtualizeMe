@@ -11,9 +11,12 @@ module SkyCloud
 
     def initialize aParams
       @sIp = IaasManager.new.get_ip(aParams)
-      sYml = "#{aParams[:vm_name]}_paas.yml"
-      sFile = YAML.load(File.open("config/#{sYml}"))
-      @sPassword = sFile["mysql_password"]
+      @sPassword = nil
+      sYml = "config/#{aParams[:vm_name]}_paas.yml"
+      if File.exist?(sYml)
+        sFile = YAML.load(File.open(sYml))
+        @sPassword = sFile["mysql_password"]
+      end
     end
 
    def configureOwncloud aParams
@@ -63,6 +66,16 @@ module SkyCloud
       File.open("config/#{aParams[:vm_name]}_saas.yml", "w") { |f|
         f.write(hData.to_yaml)
       }
+    end
+
+    def getConfig aParams
+      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method getConfig"
+      sYml = "config/#{aParams[:vm_name]}_saas.yml"
+      if File.exist?(sYml)
+        YAML.load(File.open(sYml))
+      else
+        false
+      end
     end
   
   end

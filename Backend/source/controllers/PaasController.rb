@@ -81,6 +81,24 @@ module SkyCloud
         end
       end
 
+      desc "Get config paas"
+      namespace 'config' do
+        desc ""
+        params do
+          requires :vm_name, :type => String, :desc => ""
+        end
+        post do
+          begin
+            sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Get config PaaS : #{params[:vm_name]}"
+            oPaasManager = PaasManager.new(params)
+            aResponse = oPaasManager.getConfig(params)
+            !aResponse.nil? ? (sc_response aResponse) : (sc_response true)
+          rescue ScError => e
+            sc_response e
+          end
+        end
+      end
+
     end
   end
 end
