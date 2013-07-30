@@ -106,7 +106,7 @@ include_once "../class/GetVM.php";
                     </div>
                     <div class="control-group">
                         <div class="controls">
-                            <button type="submit" id="fat-btn" class="btn" data-loading-text="Loading..." name="send" class="btn btn-primary">Submit</button>
+                            <button type="submit" id="fat-btn" class="btn btn-primary" data-loading-text="Loading..." name="send" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </form>
