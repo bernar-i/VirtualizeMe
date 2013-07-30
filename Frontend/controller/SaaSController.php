@@ -1,5 +1,4 @@
 <?php
-//session_start();
 
 /*
  * To change this template, choose Tools | Templates
@@ -11,7 +10,7 @@ include_once "../class/RestClient.php";
 if (isset($_POST["send"])) {
     $response = post("saas/owncloud.json", $_POST);
 
-    header('location: ../view/home.php');
+    header('location: ../view/home.php?vm_name=' . $_POST['vm_name'] . '');
     return $response;
 }
 ?>
