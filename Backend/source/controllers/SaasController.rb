@@ -33,14 +33,19 @@ module SkyCloud
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[SaaS] Configure virtual machine"
-            oSaasManager = SaasManager.new(params)
-            sYml = "config/#{params[:vm_name]}_saas.yml"
-            if !File.exist?(sYml)
-              oSaasManager.configureOwncloud(params)
+            sIp = IaasManager.new.get_ip(params, 10)
+            if !sIp.nil?
+              oSaasManager = SaasManager.new(params)
+              sYml = "config/#{params[:vm_name]}_saas.yml"
+              if !File.exist?(sYml)
+                oSaasManager.configureOwncloud(params, sIp)
+              end
+              oSaasManager.user(params, sIp)
+              oSaasManager.setYml(params, sIp)
+              sc_response true
+            else
+              sc_log SkyCloudLogger::LOG_FATAL, "[SaaS] IP for Virtual Machine '#{params['vm_name']}' not found, your Virtual Machine is maybe down"
             end
-            oSaasManager.user(params)
-            oSaasManager.setYml(params)
-            sc_response true
           rescue ScError => e
             sc_response e
           end

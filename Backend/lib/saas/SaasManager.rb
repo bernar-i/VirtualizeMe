@@ -11,23 +11,26 @@ module SkyCloud
     attr_reader :sIp, :sPassword
 
     def initialize aParams
-      @sIp = IaasManager.new.get_ip(aParams)
-      @sPassword = nil
-      sYml = "config/#{aParams[:vm_name]}_paas.yml"
-      if File.exist?(sYml)
-        sFile = YAML.load(File.open(sYml))
-        @sPassword = sFile["mysql_password"]
+      begin
+        @sPassword = nil
+        sYml = "config/#{aParams[:vm_name]}_paas.yml"
+        if File.exist?(sYml)
+          sFile = YAML.load(File.open(sYml))
+          @sPassword = sFile["mysql_password"]
+        end
+      rescue
+        SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_FATAL, "[SaaS] Error to initalize SaasManager"
       end
     end
 
-   def configureOwncloud aParams
+   def configureOwncloud aParams, sIp
      if @sPassword.nil?
        paas = PaasManager.new(aParams)
        paas.installPackage(aParams, "mysql-server")
        @sPassword = "VirtualizeMe42!"
      end
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method configureOwncloud"
-     ssh = Net::SSH.start(@sIp, 'root')
+     ssh = Net::SSH.start(sIp, 'root')
      ssh.exec!("wget http://download.opensuse.org/repositories/isv:ownCloud:community/Debian_7.0/Release.key")
      ssh.exec!("apt-key add - < Release.key")
      ssh.exec!("rm Release.key")
@@ -51,22 +54,22 @@ module SkyCloud
      ssh.exec!("echo ');' >> /var/www/owncloud/config/autoconfig.php")
    end
 
-   def user aParams
+   def user aParams, sIp
      if @sPassword.nil?
        @sPassword = "VirtualizeMe42!"
      end
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method user"
-     ssh = Net::SSH.start(@sIp, 'root')
+     ssh = Net::SSH.start(sIp, 'root')
      password = Digest::SHA1.hexdigest "#{aParams[:password]}"
      res = ssh.exec!("mysql -u root -p#{@sPassword} -e 'INSERT INTO owncloud.users (uid,password) values(\"#{aParams[:username]}\",\"#{password}\");'")
    end
 
-    def setYml aParams
+    def setYml aParams, sIp
       SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method setYml"
       hData = {}
       hData = {
         "ownCloud" => {
-          "url" => "http://#{@sIp}/owncloud"
+          "url" => "http://#{sIp}/owncloud"
         }
       }
       hData[aParams[:username]] = {

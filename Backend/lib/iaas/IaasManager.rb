@@ -10,7 +10,7 @@ module SkyCloud
       @oVim = nil
     end
 
-    def get_ip aParams
+    def get_ip aParams, iTimeout
       SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method get_ip"
       sIp = nil
       oRbVmomiManager = RbVmomiManager.new
@@ -18,12 +18,12 @@ module SkyCloud
       oVm = oVim.serviceInstance.find_datacenter.find_vm(aParams[:vm_name])
 
       if (!oVm.nil? && oVm.summary.runtime.powerState == "poweredOn")
-        for i in 1..30
+        for i in 1..iTimeout
           sIp = oVm.summary.guest.ipAddress
           if !sIp.nil?
             break
           end
-          sleep(5)
+          sleep(1)
         end
       end
 
@@ -63,11 +63,11 @@ module SkyCloud
             'os' => vm.summary.config.guestFullName,
             'memoryMB' => vm.summary.config.memorySizeMB,
             'cpu' => vm.summary.config.numCpu,
-            'network interface' => vm.summary.config.numEthernetCards,
-            'ip' => vm.summary.guest.ipAddress,
             'vdisk' => vm.summary.config.numVirtualDisks,
             'state' => vm.summary.runtime.powerState,
-            'uptime' => vm.summary.runtime.bootTime
+            'uptime' => vm.summary.runtime.bootTime,
+            'network interface' => vm.summary.config.numEthernetCards,
+            'ip' => vm.summary.guest.ipAddress
           }
           puts vm
         end
@@ -152,29 +152,29 @@ module SkyCloud
       oRbVmomiManager.close
     end
 
-   def hostname aParams
+   def hostname aParams, sIp
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method hostname"
-     sIp = get_ip(aParams)
+     #sIp = get_ip(aParams)
      ssh = Net::SSH.start(sIp, 'root')
      ssh.exec!("sed -i 's/#{aParams[:template]}/#{aParams[:vm_name]}/g' /etc/hostname")
      ssh.exec!('/etc/init.d/hostname.sh')
      ssh.close
    end
 
-   def network aParams
+   def network aParams, sIp
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method network"
-     sIp = get_ip(aParams)
+     #sIp = get_ip(aParams)
      ssh = Net::SSH.start(sIp, 'root')
      ssh.exec!("sed -i 's/#{sIp}/#{aParams[:ip]}/g' /etc/network/interfaces")
      ssh.close
      reboot(aParams[:vm_name])
    end
 
-   def user aParams
+   def user aParams, sIp
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[IaaS] Method user"
-     sIp = get_ip(aParams)
+     #sIp = get_ip(aParams)
      ssh = Net::SSH.start(sIp, 'root')
-      ssh.exec!("useradd -m -s /bin/bash #{aParams[:login]} -p `mkpasswd #{aParams[:password]}`")
+     ssh.exec!("useradd -m -s /bin/bash #{aParams[:login]} -p `mkpasswd #{aParams[:password]}`")
      ssh.close
    end
 

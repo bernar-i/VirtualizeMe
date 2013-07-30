@@ -30,12 +30,17 @@ module SkyCloud
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Configure virtual machine"
-            oPaasManager = PaasManager.new(params)
-            oPaasManager.installPackages(params)
-            if !params[:repository].nil?
-              oPaasManager.gitClone(params)
+            sIp = IaasManager.new.get_ip(params, 10)
+            if !sIp.nil?
+              oPaasManager = PaasManager.new(params)
+              oPaasManager.installPackages(params, sIp)
+              if !params[:repository].nil?
+                oPaasManager.gitClone(params, sIp)
+              end
+              sc_response true
+            else
+              sc_log SkyCloudLogger::LOG_FATAL, "[PaaS] IP for Virtual Machine '#{params['vm_name']}' not found, your Virtual Machine is maybe down"
             end
-            sc_response true
           rescue ScError => e
             sc_response e
           end
@@ -53,9 +58,14 @@ module SkyCloud
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Clone repository with Git"
-            oPaasManager = PaasManager.new(params)
-            oPaasManager.gitClone(params)
-            sc_response true
+            sIp = IaasManager.new.get_ip(params, 10)
+            if !sIp.nil?
+              oPaasManager = PaasManager.new(params)
+              oPaasManager.gitClone(params)
+              sc_response true
+            else
+              sc_log SkyCloudLogger::LOG_FATAL, "[PaaS] IP for Virtual Machine '#{params['vm_name']}' not found, your Virtual Machine is maybe down"
+            end
           rescue ScError => e
             sc_response e
           end
@@ -72,9 +82,14 @@ module SkyCloud
         post do
           begin
             sc_log SkyCloudLogger::LOG_INFO, "[PaaS] Update repository with Git"
-            oPaasManager = PaasManager.new(params)
-            oPaasManager.gitPull(params)
-            sc_response true
+            sIp = IaasManager.new.get_ip(params, 10)
+            if !sIp.nil?
+              oPaasManager = PaasManager.new(params)
+              oPaasManager.gitPull(params)
+              sc_response true
+            else
+              sc_log SkyCloudLogger::LOG_FATAL, "[PaaS] IP for Virtual Machine '#{params['vm_name']}' not found, your Virtual Machine is maybe down"
+            end
           rescue ScError => e
             sc_response e
           end
