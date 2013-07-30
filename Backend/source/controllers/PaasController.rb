@@ -85,7 +85,7 @@ module SkyCloud
             sIp = IaasManager.new.get_ip(params, 10)
             if !sIp.nil?
               oPaasManager = PaasManager.new(params)
-              oPaasManager.gitPull(params)
+              oPaasManager.gitPull(params, sIp)
               sc_response true
             else
               sc_log SkyCloudLogger::LOG_FATAL, "[PaaS] IP for Virtual Machine '#{params['vm_name']}' not found, your Virtual Machine is maybe down"

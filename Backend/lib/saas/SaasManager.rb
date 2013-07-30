@@ -26,7 +26,7 @@ module SkyCloud
    def configureOwncloud aParams, sIp
      if @sPassword.nil?
        paas = PaasManager.new(aParams)
-       paas.installPackage(aParams, "mysql-server")
+       paas.installPackage(aParams, "mysql-server", sIp)
        @sPassword = "VirtualizeMe42!"
      end
      SkyCloud::ScLogger.instance.putLog SkyCloudLogger::LOG_DEBUG, "[SaaS] Method configureOwncloud"
