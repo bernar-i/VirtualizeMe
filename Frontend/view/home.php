@@ -111,6 +111,10 @@ include_once "../class/GetConfigSaas.php";
                                                 <?php echo ucfirst($key) ?>
                                                 <?php if (strstr($value, "http")) : ?>
                                                     : <a href="<?php echo $value ?>"><?php echo $value ?></a>
+                                                    <?php if ($key == "url") : ?>
+                                                        <?php $url = parse_url($value)?>
+                                                        <a href="../controller/GitPull.php?vm_name=<?php echo $_GET['vm_name'] ?>&application=<?php echo preg_replace('/\//', '', $url['path']) ?>" title="Pull" class="btn btn-inverse btn-mini"><i class="icon-white icon-refresh"></i> Pull</a>
+                                                    <?php endif;?>
                                                 <?php else : ?>
                                                     <?php echo " : " . $value . " " ?>
                                                 <?php endif; ?>
